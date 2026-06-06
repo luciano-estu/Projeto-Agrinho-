@@ -1,135 +1,134 @@
-let produtos =
-JSON.parse(localStorage.getItem("produtos")) || [];
+let dados =
+JSON.parse(localStorage.getItem("dados")) || [];
 
-function salvar() {
-localStorage.setItem(
-"produtos",
-JSON.stringify(produtos)
-);
+function login(){
+
+const usuario =
+document.getElementById("user").value;
+
+const senha =
+document.getElementById("pass").value;
+
+if(usuario === "admin" && senha === "1234"){
+
+document.getElementById("painel")
+.style.display = "block";
+
+}else{
+
+alert("Usuário: admin | Senha: 1234");
+
 }
 
-function calcularReceita(){
+}
 
-let total = 0;
+function salvar(){
 
-produtos.forEach(produto => {
+localStorage.setItem(
+"dados",
+JSON.stringify(dados)
+);
 
-total +=
-produto.preco *
-produto.quantidade;
+}
+
+function atualizarDashboard(){
+
+let producao = 0;
+let receita = 0;
+
+dados.forEach(item => {
+
+producao += item.qtd;
+
+receita += item.qtd * item.preco;
 
 });
 
-document.getElementById("receita")
-.innerText =
-"R$ " + total.toFixed(2);
+document.getElementById("prod")
+.innerText = producao + " kg";
+
+document.getElementById("rec")
+.innerText = "R$ " + receita.toFixed(2);
+
 }
 
-function renderizar(lista = produtos){
+function renderizar(){
 
-const ul =
-document.getElementById(
-"listaProdutos"
-);
+const lista =
+document.getElementById("lista");
 
-ul.innerHTML = "";
+lista.innerHTML = "";
 
-lista.forEach((produto,index)=>{
+dados.forEach((item,index)=>{
 
 const li =
 document.createElement("li");
 
 li.innerHTML = `
 <div>
-<strong>${produto.nome}</strong><br>
-Produtor: ${produto.produtor}<br>
-Preço: R$ ${produto.preco}<br>
-Quantidade: ${produto.quantidade}
+<strong>${item.cultura}</strong><br>
+Quantidade: ${item.qtd} kg<br>
+Preço: R$ ${item.preco}
 </div>
 
 <button
-class="remover"
-onclick="removerProduto(${index})">
+class="excluir"
+onclick="remover(${index})">
 Excluir
 </button>
 `;
 
-ul.appendChild(li);
+lista.appendChild(li);
 
 });
 
-calcularReceita();
+atualizarDashboard();
+
 }
 
-function adicionarProduto(){
+function add(){
 
-const nome =
-document.getElementById("nome").value;
+const cultura =
+document.getElementById("cultura").value;
+
+const qtd =
+Number(document.getElementById("qtd").value);
 
 const preco =
-Number(
-document.getElementById("preco").value
-);
+Number(document.getElementById("preco").value);
 
-const quantidade =
-Number(
-document.getElementById("quantidade").value
-);
+if(!cultura || !qtd || !preco){
 
-const produtor =
-document.getElementById("produtor").value;
-
-if(
-!nome ||
-!preco ||
-!quantidade ||
-!produtor
-){
 alert("Preencha todos os campos");
+
 return;
+
 }
 
-produtos.push({
-nome,
-preco,
-quantidade,
-produtor
+dados.push({
+cultura,
+qtd,
+preco
 });
 
 salvar();
+
 renderizar();
 
-document.getElementById("nome").value="";
+document.getElementById("cultura").value="";
+document.getElementById("qtd").value="";
 document.getElementById("preco").value="";
-document.getElementById("quantidade").value="";
-document.getElementById("produtor").value="";
+
 }
 
-function removerProduto(index){
+function remover(index){
 
-produtos.splice(index,1);
+dados.splice(index,1);
 
 salvar();
 
 renderizar();
-}
 
-function pesquisarProduto(){
-
-const texto =
-document
-.getElementById("busca")
-.value
-.toLowerCase();
-
-const filtrados =
-produtos.filter(produto =>
-produto.nome
-.toLowerCase()
-.includes(texto)
-);
-
-renderizar(filtrados);
 }
 
 renderizar();
